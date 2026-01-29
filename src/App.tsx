@@ -17,6 +17,7 @@ const App = () => {
     const [invoiceDate, setInvoiceDate] = useState('06/01/2025');
     const [billingPeriod, setBillingPeriod] = useState('2025/12/01-2025/12/31');
     const [currency, setCurrency] = useState('USD');
+    const [billTo, setBillTo] = useState('');
     const [items, setItems] = useState<InvoiceItem[]>([
         { id: '1', date: '2025年12月', description: '广告推广费用', amount: '104,893.06' }
     ]);
@@ -99,6 +100,7 @@ const App = () => {
             setInvoiceDate(inv.invoiceDate);
             setBillingPeriod(inv.billingPeriod);
             setCurrency(inv.currency);
+            setBillTo(inv.billTo);
             setItems(inv.items.map((item, idx) => ({
                 id: idx.toString(),
                 date: item.date,
@@ -223,6 +225,16 @@ const App = () => {
                             />
                         </div>
 
+                        <div className="form-group">
+                            <label className="form-label">Bill To (公司名称)</label>
+                            <input
+                                className="form-input"
+                                value={billTo}
+                                onChange={(e) => setBillTo(e.target.value)}
+                                placeholder="输入客户公司名称"
+                            />
+                        </div>
+
 
                         <div className="form-group">
                             <label className="form-label">项目列表</label>
@@ -302,7 +314,7 @@ const App = () => {
                     </div>
 
                     <div style={{ marginTop: '2rem' }}>
-                        <div className="section-title">Bill To:</div>
+                        <div className="section-title">Bill To: {billTo}</div>
                         <table className="invoice-table">
                             <thead>
                                 <tr>
