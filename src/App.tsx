@@ -55,14 +55,18 @@ const App = () => {
         });
 
         const imgData = canvas.toDataURL('image/png');
+
+        // Calculate dimensions - use A4 width but dynamic height based on content
+        const pageWidth = 210; // A4 width in mm
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Create PDF with custom page size to fit all content on one page
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4'
+            format: [pageWidth, imgHeight] // Dynamic height based on content
         });
-
-        const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
 
