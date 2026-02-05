@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Download, Plus, Trash2, Printer, FileSpreadsheet, Upload, FolderDown } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -18,10 +18,20 @@ const App = () => {
     const [billingPeriod, setBillingPeriod] = useState('2025/12/01-2025/12/31');
     const [currency, setCurrency] = useState('USD');
     const [billTo, setBillTo] = useState('');
+    const [customFilename, setCustomFilename] = useState('');
     const [items, setItems] = useState<InvoiceItem[]>([
         { id: '1', date: '2025年12月', description: '广告推广费用', amount: '104,893.06' }
     ]);
     const [total, setTotal] = useState('104,893.06');
+
+    // Auto-calculate total when items change
+    useEffect(() => {
+        const sum = items.reduce((acc, item) => {
+            const val = parseFloat(item.amount.replace(/,/g, ''));
+            return acc + (isNaN(val) ? 0 : val);
+        }, 0);
+        setTotal(sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }, [items]);
 
     // Batch Mode State
     const [isBatchMode, setIsBatchMode] = useState(false);
@@ -73,7 +83,8 @@ const App = () => {
         if (filename) {
             return pdf.output('blob');
         } else {
-            pdf.save(`Invoice_${invoiceNo}.pdf`);
+            const name = customFilename.trim() ? customFilename.trim() : `Invoice_${invoiceNo}`;
+            pdf.save(`${name}.pdf`);
         }
     };
 
@@ -133,7 +144,8 @@ const App = () => {
 
             const pdfBlob = await handleDownloadPDF('blob');
             if (pdfBlob && folder) {
-                folder.file(`Invoice_${inv.invoiceNo}.pdf`, pdfBlob);
+                const fileName = inv.filename ? inv.filename : `Invoice_${inv.invoiceNo}`;
+                folder.file(`${fileName}.pdf`, pdfBlob);
             }
         }
 
@@ -282,6 +294,16 @@ const App = () => {
                                 className="form-input"
                                 value={total}
                                 onChange={(e) => setTotal(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">导出文件名 (可选)</label>
+                            <input
+                                className="form-input"
+                                placeholder={`默认: Invoice_${invoiceNo}`}
+                                value={customFilename}
+                                onChange={(e) => setCustomFilename(e.target.value)}
                             />
                         </div>
 

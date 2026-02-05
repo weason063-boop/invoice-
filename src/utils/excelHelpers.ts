@@ -6,6 +6,7 @@ export interface BatchInvoiceData {
     billingPeriod: string;
     currency: string;
     billTo: string;
+    filename?: string;
     items: {
         date: string;
         description: string;
@@ -20,15 +21,16 @@ export const downloadBatchTemplate = () => {
         'Billing Period',
         'Currency',
         'Bill To',
+        'Filename',
         'Item Date',
         'Item Description',
         'Item Amount'
     ];
 
     const sampleData = [
-        ['20260101', '01/01/2026', '2026/01/01-2026/01/31', 'USD', 'Client A Company', '2026年1月', '服务费', '1000.00'],
-        ['20260101', '01/01/2026', '2026/01/01-2026/01/31', 'USD', 'Client A Company', '2026年1月', '咨询费', '500.00'],
-        ['20260102', '02/01/2026', '2026/01/01-2026/01/31', 'CNY', 'Client B Corp', '2026年1月', '设备采购', '50000.00']
+        ['20260101', '01/01/2026', '2026/01/01-2026/01/31', 'USD', 'Client A Company', 'Google-Jan-2026', '2026年1月', '服务费', '1000.00'],
+        ['20260101', '01/01/2026', '2026/01/01-2026/01/31', 'USD', 'Client A Company', 'Google-Jan-2026', '2026年1月', '咨询费', '500.00'],
+        ['20260102', '02/01/2026', '2026/01/01-2026/01/31', 'CNY', 'Client B Corp', '', '2026年1月', '设备采购', '50000.00']
     ];
 
     const ws = XLSX.utils.aoa_to_sheet([headers, ...sampleData]);
@@ -61,6 +63,7 @@ export const parseExcelFile = (file: File): Promise<BatchInvoiceData[]> => {
                             billingPeriod: String(row['Billing Period'] || row['BillingPeriod'] || ''),
                             currency: String(row['Currency'] || 'USD'),
                             billTo: String(row['Bill To'] || row['BillTo'] || ''),
+                            filename: String(row['Filename'] || row['FileName'] || ''),
                             items: []
                         });
                     }
