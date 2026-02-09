@@ -12,10 +12,43 @@ interface InvoiceItem {
     amount: string;
 }
 
+// Helper function to generate default invoice number based on current date
+const generateInvoiceNo = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const datePrefix = `${year}${month}${day}`; // YYYYMMDD format
+    const suffix = '00001'; // Default suffix, can be customized
+    return `${datePrefix}${suffix}`;
+};
+
+// Helper function to format current date as DD/MM/YYYY
+const getCurrentDate = () => {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    return `${day}/${month}/${year}`;
+};
+
+// Helper function to get last month's billing period
+const getLastMonthPeriod = () => {
+    const now = new Date();
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const year = lastMonth.getFullYear();
+    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
+
+    // Get last day of the month
+    const lastDay = new Date(year, lastMonth.getMonth() + 1, 0).getDate();
+
+    return `${year}/${month}/01-${year}/${month}/${String(lastDay).padStart(2, '0')}`;
+};
+
 const App = () => {
-    const [invoiceNo, setInvoiceNo] = useState('2026010600102');
-    const [invoiceDate, setInvoiceDate] = useState('06/01/2025');
-    const [billingPeriod, setBillingPeriod] = useState('2025/12/01-2025/12/31');
+    const [invoiceNo, setInvoiceNo] = useState(generateInvoiceNo());
+    const [invoiceDate, setInvoiceDate] = useState(getCurrentDate());
+    const [billingPeriod, setBillingPeriod] = useState(getLastMonthPeriod());
     const [currency, setCurrency] = useState('USD');
     const [billTo, setBillTo] = useState('');
     const [customFilename, setCustomFilename] = useState('');
